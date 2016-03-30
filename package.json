@@ -1,0 +1,35 @@
+{
+  "name": "cxproduct",
+  "version": "0.0.1",
+  "description": "Cartesian cross-product as a first class object",
+  "main": "index.js",
+  "client": "./browser/cxproduct.js",
+  "reveal": true,
+  "isomorphic": true,
+  "scripts": {
+    "test": "istanbul cover node_modules/mocha/bin/_mocha --report lcov -- -R spec",
+    "browserify": "browserify index.js -o browser/cxproduct.js",
+    "minify": "minify browser/cxproduct.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/anywhichway/cxproduct.git"
+  },
+  "keywords": [
+    "cross-product",
+    "cartesian"
+  ],
+  "author": "Simon Y. Blackwell <syblackwell@anywhichway.com> (http://www.github.com/anywhichway)",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/anywhichway/cxproduct/issues"
+  },
+  "homepage": "https://github.com/anywhichway/cxproductl#readme",
+  "devDependencies": {
+    "chai": "^3.5.0",
+    "codeclimate-test-reporter": "^0.3.1",
+    "istanbul": "^0.4.2",
+    "mocha": "^2.4.5"
+  },
+  "dependencies": {}
+}
