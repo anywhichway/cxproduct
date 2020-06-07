@@ -2,13 +2,11 @@
 
 Cartesian cross-product as a first class object.
 
-CXProduct supports high-speed, low memory virtual Cartesian cross-product creation and use through the use of lazy evaluation, i.e. rows of the cross-product are not created until needed by calling functions.
+Naive cross-products can rapidly consume vast amounts of memory and degrade exponentially in performance. CXProduct supports high-speed, low memory virtual Cartesian cross-product creation and use through the use of lazy evaluation, i.e. rows of the cross-product are not created until needed by calling functions.
 
 # Install
 
 npm install cxproduct
-
-The index.js and package.json files are compatible with https://github.com/anywhichway/node-require so that rule-reactor can be served directly to the browser from the node-modules/jovial directory when using node Express.
 
 Browser code can also be found in the browser directory at https://github.com/anywhichway/browser.
 
@@ -22,9 +20,9 @@ The following methods are supported:
 
 .push(index,element) - Adds the element to the array at the index in the collection of arrays associated with the CXProduct.
 
-.forEach(callback,[pattern,test]) - Iterates over the CXProduct and invokes the callback for each row, optionally matching the row against a provided patter or passing the provided boolean test. The callback takes the signature callback(row,index). The test takes the signature test(array) and should return true or false. It is not recommended to loop through the CXProduct using .get and a counter. The access algorithms are different and the one under forEach is optimized for forward moving access rather than random access.
+.forEach(callback,[pattern,test]) - Iterates over the CXProduct and invokes the callback for each row, optionally matching the row against a provided pattern or passing the provided boolean test. The callback takes the signature callback(row,index). The test takes the signature test(array) and should return true or false. It is not recommended to loop through the CXProduct using .get and a counter. The access algorithms are different and the one under forEach is optimized for forward moving access rather than random access.
 
-.get(index) - Return row at index. Allocated memory for the row. Repeated calls will not return the same object. No cache is created with the CXProduct since underlying collections may be changed application code in a manner than changes the nature of the CXProduct. A cache option that copies arrays when added to the CXProduct will be added in the future
+.get(index) - Return row at index. Allocates memory for the row. Repeated calls will not return the same object. No cache is created with the CXProduct since underlying collections may be changed by application code in a manner than changes the nature of the CXProduct. A cache option that copies arrays when added to the CXProduct may be added in the future
 
 .has(row) - Where row is an ordered list of elements.
 
@@ -48,6 +46,8 @@ Currently in ALPHA due to lack of unit tests and the fact it has just been extra
 v0.0.1 No unit tests yet. The test option of .forEach is implemented; however, the pattern matching is not, always pass undefined.
 
 # Updates (reverse chronological order)
+
+2020-06-07 v0.0.2 Updated documentation.
 
 2016-03-30 v0.0.1 First public commit.
 
