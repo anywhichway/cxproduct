@@ -1,8 +1,7 @@
 # CXProduct
 
-Cartesian cross-product as a first class object.
-
-Naive cross-products can rapidly consume vast amounts of memory and degrade exponentially in performance. CXProduct supports high-speed, low memory virtual Cartesian cross-product creation and use through the use of lazy evaluation, i.e. rows of the cross-product are not created until needed by calling functions.
+Cartesian cross-product as a first class object. Naive cross-products can rapidly consume vast amounts of memory and degrade exponentially in performance. CXProduct supports high-speed, 
+low memory virtual Cartesian cross-product creation and use through the use of lazy evaluation, i.e. rows of the cross-product are not created until needed by calling functions.
 
 # Install
 
@@ -46,6 +45,8 @@ Currently in ALPHA due to lack of unit tests and the fact it has just been extra
 v0.0.1 No unit tests yet. The test option of .forEach is implemented; however, the pattern matching is not, always pass undefined.
 
 # Updates (reverse chronological order)
+
+2020-07-14 v0.0.3 Updated documentation.
 
 2020-06-07 v0.0.2 Updated documentation.
 
