@@ -1,40 +1,71 @@
-(function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof require=="function"&&require;if(!u&&a)return a(o,!0);if(i)return i(o,!0);var f=new Error("Cannot find module '"+o+"'");throw f.code="MODULE_NOT_FOUND",f}var l=n[o]={exports:{}};t[o][0].call(l.exports,function(e){var n=t[o][1][e];return s(n?n:e)},l,l.exports,e,t,n,r)}return n[o].exports}var i=typeof require=="function"&&require;for(var o=0;o<r.length;o++)s(r[o]);return s})({1:[function(require,module,exports){
+(function(){function r(e,n,t){function o(i,f){if(!n[i]){if(!e[i]){var c="function"==typeof require&&require;if(!f&&c)return c(i,!0);if(u)return u(i,!0);var a=new Error("Cannot find module '"+i+"'");throw a.code="MODULE_NOT_FOUND",a}var p=n[i]={exports:{}};e[i][0].call(p.exports,function(r){var n=e[i][1][r];return o(n||r)},p,p.exports,r,e,n,t)}return n[i].exports}for(var u="function"==typeof require&&require,i=0;i<t.length;i++)o(t[i]);return o}return r})()({1:[function(require,module,exports){
 (function() {
 	"use strict";
 //	portions from http://phrogz.net/lazy-cartesian-product
-	function CXProduct(collections){
+	function CXProduct(collections,options={}){ // options = {cache:true||false}
 		this.collections = (collections ? collections : []);
 		Object.defineProperty(this,"length",{set:function() {},get:function() { var size = 1; this.collections.forEach(function(collection) { size *= collection.length; }); return size; }});
 		Object.defineProperty(this,"size",{set:function() {},get:function() { return this.length; }});
+		Object.defineProperty(this,"_options",{value:Object.assign({},options)});
+		Object.defineProperty(this,"_cache",{configurable:true,value:{}});
 	}
-	CXProduct.prototype.add = function(collections) {
+	CXProduct.prototype.add = function(...collections) {
 		var me = this;
 		collections.forEach(function(collection) {
 			me.collections.push(collection);
 		});
+		this.flush();
 		return me;
 	}
 	CXProduct.prototype.push = function(collectionIndex,element) {
 		this.collections[collectionIndex].push(element);
+		this.flush();
 		return this;
 	}
 	function get(n,collections,dm,c) {
 		for (var i=collections.length;i--;)c[i]=collections[i][(n/dm[i][0]<<0)%dm[i][1]];
 	}
-	CXProduct.prototype.get = function(n,pattern){
-		var me = this, c = [], size = 1;
+	CXProduct.prototype.flush = function(index) {
+		if(typeof(index)==="number") {
+			delete this._cache[index];
+		} else {
+			Object.defineProperty(this,"_cache",{configurable:true,value:{}});
+		}
+	}
+	CXProduct.prototype.get = function(n,{test,cache}={}){
+		var me = this, c = [], size = 1, value = this._cache[n];
+		if(value!==undefined) {
+			return value;
+		}
 		for (var dm=[],f=1,l,i=me.collections.length;i--;f*=l){ dm[i]=[f,l=me.collections[i].length]; size*=me.collections[i].length; }
 		if(n>=size) {
 			return undefined;
 		}
 		get(n,me.collections,dm,c);
-		if(!pattern || pattern.every(function(value,i) {
-			return value===undefined || (typeof(value)==="function" ? value.call(c,c[i],i) : false) || c[i]===value;
-		})) {
-			return c.slice(0);
+		value = c.slice(0);
+		if(test && !test(c)) {
+			return;
 		}
+		if(cache===true || this._options.cache) {
+			this._cache[n] = value;
+		}
+		return value;
 	}
-	CXProduct.prototype.indexOf = function(row) {
+	CXProduct.has = function(row,{cache}={}) {
+		return this.get(row,{cache})>=0
+	}
+	CXProduct.prototype.indexable = function() {
+		return new Proxy(this,{
+			get(target,property) {
+				var num = parseInt(property);
+				if(num>=0) {
+					return target.get(num);
+				}
+				return target[property];
+			}
+		})
+	}
+	CXProduct.prototype.indexOf = function(row,{cache}={}) {
 		var me = this, index = 0;
 		for (var dm=[],f=1,l,i=me.collections.length;i--;f*=l){ dm[i]=f,l=me.collections[i].length; }
 		if(me.collections.every(function(collection,i) {
@@ -45,6 +76,9 @@
 			}
 			return false;
 		})) {
+			if(cache===true || this._options.cache) {
+				this._cache[index] = row.slice(0);
+			}
 			return index;
 		}
 		return -1;
@@ -59,40 +93,42 @@
 		});
 		return new CXProduct(collections);
 	}
-	CXProduct.prototype.verify = function(i,row) {
+	CXProduct.prototype.verify = function(i,row,{cache}={}) {
 		var me = this;
-		var match = me.get(i);
+		var match = me.get(i,{cache});
 		return match && match.every(function(element,i) { return element===row[i]; });
 	}
-	function dive(d,count,collections,lens,p,callback,pattern,test){
+	function dive(d,count,collections,lens,p,callback,test,cache,cxproduct){
 		var a=collections[d], max=collections.length-1,len=lens[d];
 		if (d==max) {
 			for (var i=0;i<len;++i) { 
 				p[d]=a[i]; 
 				if(!test || test(p)) {
-					callback(p.slice(0),count); 
+					var value = p.slice(0);
+					!cache || (cache[count] = value);
+					callback(value,count,cxproduct); 
 				}
 				count++;
 			}
 		} else {
 			for (var i=0;i<len;++i) {
 				p[d]=a[i];
-				dive(d+1,count,collections,lens,p,callback,pattern,test);
+				dive(d+1,count,collections,lens,p,callback,test,cache,cxproduct);
 			}
 		}
 		p.pop();
 	}
-	CXProduct.prototype.forEach1 = function(callback,pattern,test) {
+	CXProduct.prototype.forEach1 = function(callback,{test,cache}={}) {
 		var me = this, p=[],lens=[];
 		for (var i=me.collections.length;i--;) lens[i]=me.collections[i].length;
-		dive(0,0,me.collections,lens,p,callback,pattern,test);
+		dive(0,0,me.collections,lens,p,callback,test,cache ? this._cache : null,me);
 	}
-	CXProduct.prototype.forEach2 = function(callback,pattern,test) {
+	CXProduct.prototype.forEach2 = function(callback,test) {
 		var me = this, i = 0;
 		do {
-			var value = me.get(i);
+			var value = me.get(i,test);
 			if(value!==undefined) {
-				callback(value);
+				callback(value,i,cxproduct);
 			}
 			i++;
 		} while(value!==undefined);

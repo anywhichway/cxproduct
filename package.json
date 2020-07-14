@@ -26,6 +26,7 @@
   },
   "homepage": "https://github.com/anywhichway/cxproductl#readme",
   "devDependencies": {
+    "benchtest": "^2.0.4",
     "chai": "^3.5.0",
     "codeclimate-test-reporter": "^0.3.1",
     "istanbul": "^0.4.2",
