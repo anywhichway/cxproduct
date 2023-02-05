@@ -1,8 +1,6 @@
 # CXProduct
 
-Cartesian cross-product as a first class object. Naive cross-products can rapidly consume vast amounts of memory and degrade exponentially in performance. Generator based
-approaches conserve RAM, but are not typically performant. CXProduct supports high-speed, low memory virtual Cartesian cross-product creation and use through the use of 
-lazy evaluation, i.e. rows of the cross-product are not created until needed by calling functions.
+Cartesian cross-product as a first class object. Naive cross-products can rapidly consume vast amounts of memory and degrade exponentially in performance. Generator based approaches conserve RAM, but are not performant when non-sequential access is required. CXProduct supports high-speed, low memory virtual Cartesian cross-product creation and use through the use of lazy evaluation, i.e. rows of the cross-product are not created until needed by calling functions.
 
 # Install
 
@@ -14,8 +12,7 @@ Browser code can also be found in the browser directory at https://github.com/an
 
 new CXProduct(arrayOfArrays,{cache}={}) - Creates a virtual Cartesian cross-product based on the arrays. A copy of the top level wrapping array is created, 
 which means the contained arrays are not. This way they can be manipulated (added to, deleted from) by code outside the `CXProduct`. If `cache` is true, then
-all `get`, `has`, `indexOf` will all cache results. DO NOT modify the arrays with an external program if caching is on unless you call `flush()` each time you
-make a modification.
+all `get`, `has`, `indexOf` will all cache results. DO NOT modify the arrays with an external program if caching is on unless you call `flush()` each time you make a modification.
 
 The following methods are supported:
 
@@ -42,35 +39,54 @@ get and a counter. The access algorithms are different and the one under `forEac
 
 # Performance
 
-CXProduct is more performant than naive cross-product generation from a memory and speed perspective once the matrix is larger than 5x5. It is more performant than a generator
-approach once a matrix is larger than 3x3. At 3x3 performance is almost indistinguishable due to clock timing in JavaScript.
+Using a sample size of 100 cycles:
 
-| Basic                                |  Ops/Sec |      +/- |  Min |      Max | Sample |
-| ------------------------------------ | --------:| --------:| ----:| --------:| ------:|
-| construct  5x5  naive#               |      239 |       24 |   56 | Infinity |    100 |
-| construct  5x5 generator#            | Infinity | Infinity | 1786 | Infinity |    100 |
-| construct  5x5 CXProduct#            | Infinity | Infinity | 4082 | Infinity |    100 |
-| naive  5x5 forEach#                  |      396 |       40 |   40 | Infinity |    100 |
-| generator  5x5 forEach#              | Infinity | Infinity |   29 | Infinity |    100 |
-| CXProduct  5x5 forEach#              |      372 |       37 |  171 | Infinity |    100 |
-| construct and iterate 3x3 naive#     | Infinity | Infinity |  962 | Infinity |    100 |
-| construct and iterate 3x3 generator# | Infinity | Infinity | 1923 | Infinity |    100 |
-| construct and iterate 3x3 CXProduct# | Infinity | Infinity | 2597 | Infinity |    100 |
-| construct and iterate 5x5 naive#     |       26 |        3 |   11 |       41 |    100 |
-| construct and iterate 5x5 generator# |       16 |        2 |   13 |       21 |    100 |
-| construct and iterate 5x5 CXProduct# |      118 |       12 |   66 | Infinity |    100 |
-| construct and iterate 6x6 naive#     |        3 |        0 |    3 |        3 |    100 |
-| construct and iterate 6x6 generator# |        5 |        1 |    4 |        6 |    100 |
-| construct and iterate 6x6 CXProduct# |       34 |        3 |   28 |       78 |    100 |
+ - For a 3x3 matrix all tested approaches are within each others +/- range and order changes with each full run
+ - For a 5x5 matrix `CXProduct` is consistently more than 20% faster than its nearest competitor `fast-cartesion`
+ - For a 6x6 matrix `CXProduct` is more that 20% faster than both generator approaches, the one provided below and `big-cartesian`. The `naive` and `fast-cartesiona` both timeout.
+ - For time to access a combination at a random location in all possible combinations, `CXProduct` is orders of magnitude of times faster than other solutions at scale.
+
+The naive and generator implementations of Cartesian product are below:
+
+```javascript
+const naiveCartesian = (arrays) => arrays.reduce((a, b) => a.reduce((r, v) => r.concat(b.map(w => [].concat(v, w))),[]));
+
+function* generatorCartesian(head, ...tail) {
+  const remainder = tail.length > 0 ? generator(...tail) : [[]];
+  for (let r of remainder) for (let h of head) yield [h, ...r];
+}
+```
+
+| Basic                                         | Ops/Sec |    +/- |
+|-----------------------------------------------|--------:|-------:|
+| construct and iterate 3x3 naive#              |   10182 | 10.80% |
+| construct and iterate 3x3 generator#          |   11987 |  4.44% |
+| construct and iterate 3x3 CXProduct#          |   12285 |  2.77% |
+| construct and iterate 3x3 fast-cartesian      |   11824 |  9.06% |
+| construct and iterate 3x3 big-cartesian       |   10593 |  3.51% |
+| construct and iterate 5x5 naive#              |     261 |  1.73% |
+| construct and iterate 5x5 generator#          |    2019 | 18.71% |
+| construct and iterate 5x5 CXProduct#          |    8461 |  2.62% |
+| construct and iterate 5x5 fast-cartesian      |    6451 |  1.39% |
+| construct and iterate 5x5 big-cartesian       |    2311 |  2.55% |
+| construct and iterate 6x6 naive#              | Timeout |    N/A |
+| construct and iterate 6x6 generator#          |     155 |  4.74% |
+| construct and iterate 6x6 CXProduct#          |     203 |  0.88% |
+| construct and iterate 6x6 fast-cartesian      | Timeout |    N/A |
+| construct and iterate 6x6 big-cartesian       |     137 |  4.72% |
+| construct and random access 6x6 generator#    |     154 |  8.04% |
+| construct and random access 6x6 CXProduct#    |   10690 |  0.88% |
+| construct and random access 6x6 big-cartesian |     137 |  4.72% |
 
 
 # Building & Testing
 
 Building, testing and quality assessment are conducted using Mocha, Chai, Istanbul, Benchtest, Code Climate, and Codacity.
 
-For code quality assessment purposes, the cyclomatic complexity threshold is set to 10.
 
 # Updates (reverse chronological order)
+
+2023-02-05 v2.0.0 Switched to module format. Updated performance tests to use `benchtest 3.x`. Corrected issue with undocumented method `intersection`. Added comparisons to `fast-cartesian` and `big-cartesian`.
 
 2020-07-15 v1.0.0 Finally added unit and performance tests! Added caching. Calling interfaces changed to support caching. Added `indexable`.
 

@@ -1,15 +1,15 @@
 {
   "name": "cxproduct",
-  "version": "1.0.0",
+  "version": "2.0.0",
   "description": "Cartesian cross-product as a first class object",
-  "main": "index.js",
-  "client": "./browser/cxproduct.js",
-  "reveal": true,
-  "isomorphic": true,
+  "source": "src/index.js",
+  "browser": "./browser/cxproduct.js",
+  "module": "./index.js",
   "scripts": {
     "test": "istanbul cover node_modules/mocha/bin/_mocha --report lcov -- -R spec",
-    "browserify": "browserify index.js -o browser/cxproduct.js",
-    "minify": "minify browser/cxproduct.js"
+    "build": "parcel build src/index.js",
+    "prepublish": "npm run build",
+    "watch": "parcel watch src/index.js"
   },
   "repository": {
     "type": "git",
@@ -26,11 +26,15 @@
   },
   "homepage": "https://github.com/anywhichway/cxproductl#readme",
   "devDependencies": {
-    "benchtest": "^2.0.4",
+    "benchtest": "^3.1.4-b",
+    "big-cartesian": "^4.7.0",
     "chai": "^3.5.0",
-    "codeclimate-test-reporter": "^0.3.1",
+    "fast-cartesian": "^7.6.0",
     "istanbul": "^0.4.2",
-    "mocha": "^2.4.5"
+    "mocha": "^10.2.0",
+    "parcel": "^2.8.3"
   },
-  "dependencies": {}
+  "dependencies": {
+    "intersector": "^2.1.1"
+  }
 }
