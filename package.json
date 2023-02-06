@@ -1,6 +1,6 @@
 {
   "name": "cxproduct",
-  "version": "2.0.0",
+  "version": "2.0.1",
   "description": "Cartesian cross-product as a first class object",
   "source": "src/index.js",
   "browser": "./browser/cxproduct.js",
@@ -26,6 +26,7 @@
   },
   "homepage": "https://github.com/anywhichway/cxproductl#readme",
   "devDependencies": {
+    "@anywhichway/cartesian-product": "^1.0.4",
     "benchtest": "^3.1.4-b",
     "big-cartesian": "^4.7.0",
     "chai": "^3.5.0",

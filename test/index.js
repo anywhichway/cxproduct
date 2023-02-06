@@ -1,30 +1,13 @@
-var chai,
-	expect,
-	CXProduct,
-	benchtest,
-	fastCartesian;
-if(typeof(window)==="undefined") {
-	chai = require("chai");
-	expect = chai.expect;
-	CXProduct = (require("../browser/cxproduct.js")).default;
-	fastCartesian = (require("./fast-cartesian")).default;
-	bigCartesian = require("./big-cartesian");
-	benchtest = require("../node_modules/benchtest/dist/benchtest.js").default;
-	it = benchtest.it(it);
-	describe = benchtest.describe(describe);
-} else {
-	chai = window.chai;
-	expect = window.expect;
+var chai = require("chai"),
+	expect = chai.expect,
+	CXProduct = (require("../browser/cxproduct.js")).default,
+	fastCartesian = (require("./fast-cartesian")).default,
+	bigCartesian = require("./big-cartesian"),
+	cartesianProduct = (require("../node_modules/@anywhichway/cartesian-product/dist/cartesian-product.cjs")).default,
+	benchtest = (require("../node_modules/benchtest/dist/benchtest.js")).default;
 
-	it = ((it) => {
-		return function(name,spec,timeout) {
-			if(timeout && typeof(timeout)==="object") {
-				timeout = timeout.timeout;
-			}
-			return it(name,spec,timeout);
-		}
-	})(it)
-}
+it = benchtest.it(it);
+describe = benchtest.describe(describe);
 
 const naive = (arrays) => arrays.reduce((a, b) => a.reduce((r, v) => r.concat(b.map(w => [].concat(v, w))),[]));
 
@@ -56,7 +39,7 @@ for(let i=0;i<mediumDim;i++) {
 }
 
 const large = [],
-	largeDim = 6;
+	largeDim =  6;
 for(let i=0;i<largeDim;i++) {
 	const array = [];
 	for(let j=0;j<largeDim;j++) {
@@ -64,6 +47,17 @@ for(let i=0;i<largeDim;i++) {
 	}
 	large.push(array);
 }
+
+const xlarge = [],
+	xlargeDim = 7;
+for(let i=0;i<xlargeDim;i++) {
+	const array = [];
+	for(let j=0;j<xlargeDim;j++) {
+		array.push(j);
+	}
+	xlarge.push(array);
+}
+
 
 
 let smallCXProduct,
@@ -95,7 +89,7 @@ describe("Basic",function() {
 		mediumNaive = naive(medium);
 		expect(mediumNaive).to.be.instanceof(Array);
 	});
-	it(`construct  ${mediumDim}x${mediumDim} generator#`,  () => {
+	it(`construct  ${mediumDim}x${mediumDim} @anywhichway/cartesian-product#`,  () => {
 		mediumGenerator = generator(...medium);
 		expect(mediumGenerator).to.be.instanceof(Object);
 	});
@@ -150,8 +144,8 @@ describe("Basic",function() {
 		for(const item of fast) { i++ };
 		expect(i).to.equal(Math.pow(smallDim,smallDim));
 	},{metrics});
-	it(`construct and loop ${smallDim}x${smallDim} generator#`,  () => {
-		const smallGenerator = generator(...small);
+	it(`construct and loop ${smallDim}x${smallDim} @anywhichway/cartesian-product#`,  () => {
+		const smallGenerator = cartesianProduct(...small);
 		let i = 0;
 		for(let item of smallGenerator) { i++ }
 		expect(i).to.equal(Math.pow(smallDim,smallDim));
@@ -179,8 +173,8 @@ describe("Basic",function() {
 		for(const item of fast) { i++ };
 		expect(i).to.equal(Math.pow(mediumDim,mediumDim));
 	},{metrics});
-	it(`construct and loop ${mediumDim}x${mediumDim} generator#`, () => {
-		const mediumGenerator = generator(...medium);
+	it(`construct and loop ${mediumDim}x${mediumDim} @anywhichway/cartesian-product#`, () => {
+		const mediumGenerator = cartesianProduct(...medium);
 		let i = 0;
 		for(let item of mediumGenerator) { i++ }
 		expect(i).to.equal(Math.pow(mediumDim,mediumDim));
@@ -204,8 +198,8 @@ describe("Basic",function() {
 		for(const item of big) { i++ };
 		expect(i).to.equal(Math.pow(largeDim,largeDim));
 	},{metrics});
-	it(`construct and loop ${largeDim}x${largeDim} generator#`, () => {
-		const largeGenerator = generator(...large);
+	it(`construct and loop ${largeDim}x${largeDim} @anywhichway/cartesian-product#`, () => {
+		const largeGenerator = cartesianProduct(...large);
 		let i = 0;
 		for(let item of largeGenerator) { i++ }
 		expect(i).to.equal(Math.pow(largeDim,largeDim));
@@ -216,6 +210,42 @@ describe("Basic",function() {
 		for(var i=0;i<length;i++) { }
 		expect(i).to.equal(Math.pow(largeDim,largeDim));
 	},{metrics});
+	it(`construct and loop ${largeDim}x${largeDim} bigCartesian#`,  () => {
+		const big = bigCartesian(large);
+		var i = 0;
+		for(const item of big) { i++ };
+		expect(i).to.equal(Math.pow(largeDim,largeDim));
+	},{metrics});
+	it(`construct and loop ${largeDim}x${largeDim} @anywhichway/cartesian-product#`, () => {
+		const largeGenerator = cartesianProduct(...large);
+		let i = 0;
+		for(let item of largeGenerator) { i++ }
+		expect(i).to.equal(Math.pow(largeDim,largeDim));
+	},{metrics});
+	it(`construct and loop ${largeDim}x${largeDim} CXProduct#`, () => {
+		const largeCXProduct = new CXProduct(large),
+			length = largeCXProduct.length;
+		for(var i=0;i<length;i++) { }
+		expect(i).to.equal(Math.pow(largeDim,largeDim));
+	},{metrics});
+	it(`construct and loop ${xlargeDim}x${xlargeDim} bigCartesian#`,  () => {
+		const big = bigCartesian(xlarge);
+		var i = 0;
+		for(const item of big) { i++ };
+		expect(i).to.equal(Math.pow(xlargeDim,xlargeDim));
+	},{metrics});
+	it(`construct and loop ${xlargeDim}x${xlargeDim} @anywhichway/cartesian-product#`, () => {
+		const xlargeGenerator = cartesianProduct(...xlarge);
+		let i = 0;
+		for(let item of xlargeGenerator) { i++ }
+		expect(i).to.equal(Math.pow(xlargeDim,xlargeDim));
+	},{metrics});
+	it(`construct and loop ${xlargeDim}x${xlargeDim} CXProduct#`, () => {
+		const xlargeCXProduct = new CXProduct(xlarge),
+			length = xlargeCXProduct.length;
+		for(var i=0;i<length;i++) { }
+		expect(i).to.equal(Math.pow(xlargeDim,xlargeDim));
+	},{metrics});
 	it(`construct and random access ${largeDim}x${largeDim} bigCartesian#`,  () => {
 		const big = bigCartesian(large);
 		var i = 0;
@@ -224,8 +254,8 @@ describe("Basic",function() {
 		for(item of big) { i++; if(i>=random) break; };
 		expect(Array.isArray(item)).to.equal(true);
 	},{metrics});
-	it(`construct and random access ${largeDim}x${largeDim} generator#`, () => {
-		const largeGenerator = generator(...large);
+	it(`construct and random access ${largeDim}x${largeDim} @anywhichway/cartesian-product#`, () => {
+		const largeGenerator = cartesianProduct(...large);
 		let i = 0;
 		const random = Math.round(Math.pow(largeDim,largeDim) * Math.random());
 		var item;
@@ -250,8 +280,8 @@ describe("Basic",function() {
 		for(let item of fast) { i++ }
 		expect(i).to.equal(Math.pow(2,10));
 	},{metrics});
-	it(`construct and loop 2x8 generator#`, () => {
-		const largeGenerator = generator([1,2],[1,2],[1,2],[1,2],[1,2],[1,2],[1,2],[1,2],[1,2],[1,2]);
+	it(`construct and loop 2x8 @anywhichway/cartesian-product#`, () => {
+		const largeGenerator = cartesianProduct([1,2],[1,2],[1,2],[1,2],[1,2],[1,2],[1,2],[1,2],[1,2],[1,2]);
 		let i = 0;
 		for(let item of largeGenerator) { i++ }
 		expect(i).to.equal(Math.pow(2,10));
@@ -282,8 +312,8 @@ describe("Basic",function() {
 		smallNaive = naive(small);
 		smallNaive.forEach(item => expect(Array.isArray(item)).to.equal(true))
 	});
-	it(`construct and iterate ${smallDim}x${smallDim} generator#`,  () => {
-		smallGenerator = generator(...small);
+	it(`construct and iterate ${smallDim}x${smallDim} @anywhichway/cartesian-product#`,  () => {
+		smallGenerator = cartesianProduct(...small);
 		for (const item of smallGenerator) {
 			expect(Array.isArray(item)).to.equal(true)
 		}
@@ -296,8 +326,8 @@ describe("Basic",function() {
 		mediumNaive = naive(medium);
 		mediumNaive.forEach(item => expect(Array.isArray(item)).to.equal(true))
 	});
-	it(`construct and iterate ${mediumDim}x${mediumDim} generator#`,  () => {
-		mediumGenerator = generator(...medium);
+	it(`construct and iterate ${mediumDim}x${mediumDim} @anywhichway/cartesian-product#`,  () => {
+		mediumGenerator = cartesianProduct(...medium);
 		for (const item of mediumGenerator) {
 			expect(Array.isArray(item)).to.equal(true)
 		}
@@ -310,8 +340,8 @@ describe("Basic",function() {
 		largeNaive = naive(large);
 		largeNaive.forEach(item => expect(Array.isArray(item)).to.equal(true))
 	});
-	it(`construct and iterate ${largeDim}x${largeDim} generator#`,  () => {
-		largeGenerator = generator(...large);
+	it(`construct and iterate ${largeDim}x${largeDim} @anywhichway/cartesian-product#`,  () => {
+		largeGenerator = cartesianProduct(...large);
 		for (const item of largeGenerator) {
 			expect(Array.isArray(item)).to.equal(true)
 		}
