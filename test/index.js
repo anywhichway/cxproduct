@@ -173,6 +173,18 @@ describe("Basic",function() {
 		for(const item of fast) { i++ };
 		expect(i).to.equal(Math.pow(mediumDim,mediumDim));
 	},{metrics,timeout:2000});
+	it(`construct and loop ${mediumDim}x${mediumDim} CXProduct asGenerator#`, () => {
+		const mediumCXProduct = CXProduct(medium).asGenerator();
+		let i = 0;
+		for(const item of mediumCXProduct) { i++ }
+		expect(i).to.equal(Math.pow(mediumDim,mediumDim));
+	},{metrics,timeout:2000});
+	it(`construct and loop ${mediumDim}x${mediumDim} CXProduct asArrayLike#`, () => {
+		const mediumCXProduct = (new CXProduct(medium)).asArrayLike(),
+			length = mediumCXProduct.length;
+		for(var i=0;i<length;i++) {  }
+		expect(i).to.equal(Math.pow(mediumDim,mediumDim));
+	},{metrics,timeout:2000});
 	it(`construct and loop ${mediumDim}x${mediumDim} @anywhichway/cartesian-product#`, () => {
 		const mediumGenerator = cartesianProduct(...medium);
 		let i = 0;

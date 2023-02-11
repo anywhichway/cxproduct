@@ -6,8 +6,6 @@ Very high-speed, low memory Cartesian cross-product as a first class object. Nai
 
 npm install cxproduct
 
-Browser code can also be found in the browser directory at https://github.com/anywhichway/browser.
-
 # Documentation
 
 new CXProduct(arrayOfArrays,{cache}={}) - Creates a virtual Cartesian cross-product based on the arrays. A copy of the top level wrapping array is created, 
@@ -15,6 +13,10 @@ which means the contained arrays are not. This way they can be manipulated (adde
 all `get`, `has`, `indexOf` will all cache results. DO NOT modify the arrays with an external program if caching is on unless you call `flush()` each time you make a modification.
 
 The following methods are supported:
+
+`asGenerator()` - Returns a generator equivalent of the CXProduct so you can use `for(item of cxproduct.asGenerator())`. For convenience, the generator also has a `length` property so you can use `const iterable = cxproduct.asGenerator(); for(let i=0;i<iterable.length;i++)`
+
+`asArrayLike()` - Returns a Proxy that behaves like an array of the CXProduct so you can use `const arrayLike = cxproduct.asGnerator(); for(let i=0;i<arrayLike.length;i++)`
 
 `.add(array,...)` - Adds the array to the collection of arrays already associated with the CXProduct. Invalidates the cache, if any.
 
@@ -59,8 +61,8 @@ The naive and generator implementations of Cartesian product are below:
 ```javascript
 const naiveCartesian = (arrays) => arrays.reduce((a, b) => a.reduce((r, v) => r.concat(b.map(w => [].concat(v, w))),[]));
 
-function* generatorCartesian(head, ...tail) {
-  const remainder = tail.length > 0 ? generator(...tail) : [[]];
+function* generatorCartesian([head, ...tail]) {
+  const remainder = tail.length > 0 ? generatorCartesian(tail) : [[]];
   for (let r of remainder) for (let h of head) yield [h, ...r];
 }
 ```
@@ -107,6 +109,8 @@ Typically there will be higher performance variability with the generator functi
 Building, testing and quality assessment are conducted using Mocha, Chai, Istanbul, Benchtest, Code Climate, and Codacity.
 
 # Updates (reverse chronological order)
+
+2023-02-11 v2.1.0 Added `asGenerator` and `asArrayLike`.
 
 2023-02-11 v2.0.2 Updated documentation.
 

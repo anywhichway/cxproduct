@@ -26,12 +26,40 @@ SOFTWARE.
 import {intersector} from "intersector";
 const intersection = intersector(true);
 
+
 	function CXProduct(collections,options={}){ // options = {cache:true||false}
+		if(!this || typeof(this)!=="object" || !(this instanceof CXProduct)) {
+			return new CXProduct(collections,options);
+		}
 		this.collections = (collections ? collections : []);
-		Object.defineProperty(this,"length",{set:function() {},get:function() { var size = 1; this.collections.forEach(function(collection) { size *= collection.length; }); return size; }});
+		Object.defineProperty(this,"length",{set:function() {},get:function() { let size = 1; this.collections.forEach(function(collection) { size *= collection.length; }); return size; }});
 		Object.defineProperty(this,"size",{set:function() {},get:function() { return this.length; }});
 		Object.defineProperty(this,"_options",{value:Object.assign({},options)});
 		Object.defineProperty(this,"_cache",{configurable:true,value:{}});
+		//createIterable(this);
+	}
+	CXProduct.prototype.asGenerator = function() {
+		const ctx = this,
+			generator = (function* generator([head, ...tail]) {
+				const remainder = tail.length > 0 ? generator(tail) : [[]];
+				for (let r of remainder) for (let h of head) yield [h, ...r];
+			})(this.collections);
+		Object.defineProperty(generator,"length",{get() { return ctx.length; }});
+		return generator;
+	}
+	CXProduct.prototype.asArrayLike = function() {
+		const scope = this;
+		return new Proxy([],{
+			get(target,key) {
+				if(key==="length") {
+					return scope.length;
+				}
+				if(typeof(key)==="number") {
+					return scope.get(key)
+				}
+				return target[key];
+			}
+		})
 	}
 	CXProduct.prototype.add = function(...collections) {
 		var me = this;
@@ -158,5 +186,6 @@ const intersection = intersector(true);
 		} while(value!==undefined);
 	}
 	CXProduct.prototype.forEach = CXProduct.prototype.forEach1;
+
 
 export {CXProduct,CXProduct as default}

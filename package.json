@@ -1,13 +1,12 @@
 {
   "name": "cxproduct",
-  "version": "2.0.2",
+  "version": "2.1.0",
   "description": "Cartesian cross-product as a first class object",
   "type": "module",
   "source": "./src/index.js",
-  "browser": "./browser/cxproduct.js",
   "main": "./index.js",
   "scripts": {
-    "test": "istanbul cover node_modules/mocha/bin/_mocha --report lcov -- -R spec",
+    "test": "parcel build ./src/index.js && istanbul cover node_modules/mocha/bin/_mocha --report lcov -- -R spec",
     "build": "parcel build ./src/index.js",
     "prepublish": "npm run build",
     "watch": "parcel watch ./src/index.js"

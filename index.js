@@ -26,11 +26,12 @@ SOFTWARE.
 
 const $cf838c15c8b009ba$var$intersection = (0, $l7i9T$intersector)(true);
 function $cf838c15c8b009ba$export$e6364d3a253aa425(collections, options = {}) {
+    if (!this || typeof this !== "object" || !(this instanceof $cf838c15c8b009ba$export$e6364d3a253aa425)) return new $cf838c15c8b009ba$export$e6364d3a253aa425(collections, options);
     this.collections = collections ? collections : [];
     Object.defineProperty(this, "length", {
         set: function() {},
         get: function() {
-            var size = 1;
+            let size = 1;
             this.collections.forEach(function(collection) {
                 size *= collection.length;
             });
@@ -50,7 +51,35 @@ function $cf838c15c8b009ba$export$e6364d3a253aa425(collections, options = {}) {
         configurable: true,
         value: {}
     });
+//createIterable(this);
 }
+$cf838c15c8b009ba$export$e6364d3a253aa425.prototype.asGenerator = function() {
+    const ctx = this, generator = function* generator([head, ...tail]) {
+        const remainder = tail.length > 0 ? generator(tail) : [
+            []
+        ];
+        for (let r of remainder)for (let h of head)yield [
+            h,
+            ...r
+        ];
+    }(this.collections);
+    Object.defineProperty(generator, "length", {
+        get () {
+            return ctx.length;
+        }
+    });
+    return generator;
+};
+$cf838c15c8b009ba$export$e6364d3a253aa425.prototype.asArrayLike = function() {
+    const scope = this;
+    return new Proxy([], {
+        get (target, key) {
+            if (key === "length") return scope.length;
+            if (typeof key === "number") return scope.get(key);
+            return target[key];
+        }
+    });
+};
 $cf838c15c8b009ba$export$e6364d3a253aa425.prototype.add = function(...collections) {
     var me = this;
     collections.forEach(function(collection) {
