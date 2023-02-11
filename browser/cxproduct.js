@@ -1,16 +1,31 @@
-function $parcel$defineInteropFlag(a) {
-  Object.defineProperty(a, '__esModule', {value: true, configurable: true});
-}
-function $parcel$export(e, n, v, s) {
-  Object.defineProperty(e, n, {get: v, set: s, enumerable: true, configurable: true});
-}
+import {intersector as $eMWTp$intersector} from "intersector";
 
-$parcel$defineInteropFlag(module.exports);
+/*
+MIT License
 
-$parcel$export(module.exports, "CXProduct", () => $4fa36e821943b400$export$e6364d3a253aa425);
-$parcel$export(module.exports, "default", () => $4fa36e821943b400$export$e6364d3a253aa425);
-//	portions from http://phrogz.net/lazy-cartesian-product
-function $4fa36e821943b400$export$e6364d3a253aa425(collections, options = {}) {
+Copyright (c) 2016-2023 Simon Y. Blackwell
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+	The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+
+	THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+	FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+	OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.
+*/ //	portions from http://phrogz.net/lazy-cartesian-product
+
+const $cf838c15c8b009ba$var$intersection = (0, $eMWTp$intersector)(true);
+function $cf838c15c8b009ba$export$e6364d3a253aa425(collections, options = {}) {
     this.collections = collections ? collections : [];
     Object.defineProperty(this, "length", {
         set: function() {},
@@ -36,7 +51,7 @@ function $4fa36e821943b400$export$e6364d3a253aa425(collections, options = {}) {
         value: {}
     });
 }
-$4fa36e821943b400$export$e6364d3a253aa425.prototype.add = function(...collections) {
+$cf838c15c8b009ba$export$e6364d3a253aa425.prototype.add = function(...collections) {
     var me = this;
     collections.forEach(function(collection) {
         me.collections.push(collection);
@@ -44,22 +59,22 @@ $4fa36e821943b400$export$e6364d3a253aa425.prototype.add = function(...collection
     this.flush();
     return me;
 };
-$4fa36e821943b400$export$e6364d3a253aa425.prototype.push = function(collectionIndex, element) {
+$cf838c15c8b009ba$export$e6364d3a253aa425.prototype.push = function(collectionIndex, element) {
     this.collections[collectionIndex].push(element);
     this.flush();
     return this;
 };
-function $4fa36e821943b400$var$get(n, collections, dm, c) {
+function $cf838c15c8b009ba$var$get(n, collections, dm, c) {
     for(var i = collections.length; i--;)c[i] = collections[i][(n / dm[i][0] << 0) % dm[i][1]];
 }
-$4fa36e821943b400$export$e6364d3a253aa425.prototype.flush = function(index) {
+$cf838c15c8b009ba$export$e6364d3a253aa425.prototype.flush = function(index) {
     if (typeof index === "number") delete this._cache[index];
     else Object.defineProperty(this, "_cache", {
         configurable: true,
         value: {}
     });
 };
-$4fa36e821943b400$export$e6364d3a253aa425.prototype.get = function(n, { test: test , cache: cache  } = {}) {
+$cf838c15c8b009ba$export$e6364d3a253aa425.prototype.get = function(n, { test: test , cache: cache  } = {}) {
     var me = this, c = [], size = 1, value = this._cache[n];
     if (value !== undefined) return value;
     for(var dm = [], f = 1, l, i = me.collections.length; i--; f *= l){
@@ -70,18 +85,18 @@ $4fa36e821943b400$export$e6364d3a253aa425.prototype.get = function(n, { test: te
         size *= me.collections[i].length;
     }
     if (n >= size) return undefined;
-    $4fa36e821943b400$var$get(n, me.collections, dm, c);
+    $cf838c15c8b009ba$var$get(n, me.collections, dm, c);
     value = c.slice(0);
     if (test && !test(c)) return;
     if (cache === true || this._options.cache) this._cache[n] = value;
     return value;
 };
-$4fa36e821943b400$export$e6364d3a253aa425.has = function(row, { cache: cache  } = {}) {
+$cf838c15c8b009ba$export$e6364d3a253aa425.has = function(row, { cache: cache  } = {}) {
     return this.get(row, {
         cache: cache
     }) >= 0;
 };
-$4fa36e821943b400$export$e6364d3a253aa425.prototype.indexable = function() {
+$cf838c15c8b009ba$export$e6364d3a253aa425.prototype.indexable = function() {
     return new Proxy(this, {
         get (target, property) {
             var num = parseInt(property);
@@ -90,7 +105,7 @@ $4fa36e821943b400$export$e6364d3a253aa425.prototype.indexable = function() {
         }
     });
 };
-$4fa36e821943b400$export$e6364d3a253aa425.prototype.indexOf = function(row, { cache: cache  } = {}) {
+$cf838c15c8b009ba$export$e6364d3a253aa425.prototype.indexOf = function(row, { cache: cache  } = {}) {
     var me = this, index = 0;
     for(var dm = [], f = 1, l, i = me.collections.length; i--; f *= l)dm[i] = f, l = me.collections[i].length;
     if (me.collections.every(function(collection, i) {
@@ -106,15 +121,15 @@ $4fa36e821943b400$export$e6364d3a253aa425.prototype.indexOf = function(row, { ca
     }
     return -1;
 };
-$4fa36e821943b400$export$e6364d3a253aa425.prototype.intersection = function(cxproduct1) {
+$cf838c15c8b009ba$export$e6364d3a253aa425.prototype.intersection = function(cxproduct1) {
     var me = this, collections = [];
-    if (me.collections.length !== cxproduct1.collections.length) return new $4fa36e821943b400$export$e6364d3a253aa425([]);
+    if (me.collections.length !== cxproduct1.collections.length) return new $cf838c15c8b009ba$export$e6364d3a253aa425([], this._options);
     me.collections.forEach(function(collection, i) {
-        collections.push(intersection(collection, cxproduct1.collections[i]));
+        collections.push($cf838c15c8b009ba$var$intersection(collection, cxproduct1.collections[i]));
     });
-    return new $4fa36e821943b400$export$e6364d3a253aa425(collections);
+    return new $cf838c15c8b009ba$export$e6364d3a253aa425(collections, this._options);
 };
-$4fa36e821943b400$export$e6364d3a253aa425.prototype.verify = function(i, row, { cache: cache  } = {}) {
+$cf838c15c8b009ba$export$e6364d3a253aa425.prototype.verify = function(i, row, { cache: cache  } = {}) {
     var me = this;
     var match = me.get(i, {
         cache: cache
@@ -123,7 +138,7 @@ $4fa36e821943b400$export$e6364d3a253aa425.prototype.verify = function(i, row, { 
         return element === row[i];
     });
 };
-function $4fa36e821943b400$var$dive(d, count, collections, lens, p, callback, test, cache, cxproduct1) {
+function $cf838c15c8b009ba$var$dive(d, count, collections, lens, p, callback, test, cache, cxproduct1) {
     var a = collections[d], max = collections.length - 1, len = lens[d];
     if (d == max) for(var i = 0; i < len; ++i){
         p[d] = a[i];
@@ -136,16 +151,16 @@ function $4fa36e821943b400$var$dive(d, count, collections, lens, p, callback, te
     }
     else for(var i = 0; i < len; ++i){
         p[d] = a[i];
-        $4fa36e821943b400$var$dive(d + 1, count, collections, lens, p, callback, test, cache, cxproduct1);
+        $cf838c15c8b009ba$var$dive(d + 1, count, collections, lens, p, callback, test, cache, cxproduct1);
     }
     p.pop();
 }
-$4fa36e821943b400$export$e6364d3a253aa425.prototype.forEach1 = function(callback, { test: test , cache: cache  } = {}) {
+$cf838c15c8b009ba$export$e6364d3a253aa425.prototype.forEach1 = function(callback, { test: test , cache: cache  } = {}) {
     var me = this, p = [], lens = [];
     for(var i = me.collections.length; i--;)lens[i] = me.collections[i].length;
-    $4fa36e821943b400$var$dive(0, 0, me.collections, lens, p, callback, test, cache ? this._cache : null, me);
+    $cf838c15c8b009ba$var$dive(0, 0, me.collections, lens, p, callback, test, cache ? this._cache : null, me);
 };
-$4fa36e821943b400$export$e6364d3a253aa425.prototype.forEach2 = function(callback, test) {
+$cf838c15c8b009ba$export$e6364d3a253aa425.prototype.forEach2 = function(callback, test) {
     var me = this, i = 0;
     do {
         var value = me.get(i, test);
@@ -153,7 +168,8 @@ $4fa36e821943b400$export$e6364d3a253aa425.prototype.forEach2 = function(callback
         i++;
     }while (value !== undefined);
 };
-$4fa36e821943b400$export$e6364d3a253aa425.prototype.forEach = $4fa36e821943b400$export$e6364d3a253aa425.prototype.forEach1;
+$cf838c15c8b009ba$export$e6364d3a253aa425.prototype.forEach = $cf838c15c8b009ba$export$e6364d3a253aa425.prototype.forEach1;
 
 
+export {$cf838c15c8b009ba$export$e6364d3a253aa425 as CXProduct, $cf838c15c8b009ba$export$e6364d3a253aa425 as default};
 //# sourceMappingURL=cxproduct.js.map

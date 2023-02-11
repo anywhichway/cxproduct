@@ -1,6 +1,6 @@
 # CXProduct
 
-Cartesian cross-product as a first class object. Naive cross-products can rapidly consume vast amounts of memory and degrade exponentially in performance. Generator based approaches conserve RAM, but are not performant when non-sequential access is required. CXProduct supports high-speed, low memory virtual Cartesian cross-product creation and use through the use of lazy evaluation, i.e. rows of the cross-product are not created until needed by calling functions.
+Very high-speed, low memory Cartesian cross-product as a first class object. Naive cross-products can rapidly consume vast amounts of memory and degrade exponentially in performance. Generator based approaches conserve RAM, but are not performant when non-sequential access is required. CXProduct supports virtual Cartesian cross-product creation and use through the use of lazy evaluation, i.e. rows of the cross-product are not created until needed by calling functions.
 
 # Install
 
@@ -45,7 +45,14 @@ Using a sample size of 100 cycles and a timeout prr cycle of 2000ms:
  - For a 5x5 matrix `CXProduct` is consistently more than 20% faster than its nearest competitor `fast-cartesion`
  - For a 6x6 matrix `CXProduct` is more that 20% faster than both generator approaches, `@anywhichway/cartesain-product` and `big-cartesian`. The `@anywhichway/cartesain-product` The `naive` and `fast-cartesiona` both timeout.
  - For a 7x7 matrix `CXProduct` is the sole approach that does not timeout when iterating over all combinations.
- - For time to access a combination at a random location in all possible combinations, `CXProduct` is orders of magnitude of times faster than other solutions at scale.
+ - For time to access a combination at a random location in all possible combinations, `CXProduct` is orders of magnitude faster than other solutions at scale.
+
+Matrix sizes:
+
+- 3x3 27
+- 5x5 3,125
+- 6x6 46,656
+- 7x7 823,543
 
 The naive and generator implementations of Cartesian product are below:
 
@@ -58,7 +65,7 @@ function* generatorCartesian(head, ...tail) {
 }
 ```
 
-The generator version with a slight enhancement to support the `length` property is available as [@anywhichway/cartesian-product](https://www.npmjs.com/package/@anywhichway/cartesian-product).
+The generator version, with a slight enhancement to support the `length` property, is available as [@anywhichway/cartesian-product](https://www.npmjs.com/package/@anywhichway/cartesian-product).
 
 | Basic                                                          | Ops/Sec |    +/- |
 |----------------------------------------------------------------|--------:|-------:|
@@ -73,16 +80,16 @@ The generator version with a slight enhancement to support the `length` property
 | construct and loop 5x5 fast-cartesian                          |    6451 |  1.39% |
 | construct and loop 5x5 big-cartesian                           |    2099 | 20.63% |
 | construct and loop 6x6 naive#                                  | Timeout |    N/A |
-| construct and loop 6x6 @anywhichway/cartesian-product          |     155 |  4.74% |
-| construct and loop 6x6 CXProduct#                              |     203 |  0.88% |
+| construct and loop 6x6 @anywhichway/cartesian-product          |      82 |  3.60% |
+| construct and loop 6x6 CXProduct#                              |    1004 |  0.52% |
 | construct and loop 6x6 fast-cartesian                          | Timeout |    N/A |
-| construct and loop 6x6 big-cartesian                           |     137 |  4.72% |
-| construct and loop 7x7 CXProduct#                              |      12 |  1.08% |
+| construct and loop 6x6 big-cartesian                           |      84 |  2.86% |
+| construct and loop 7x7 CXProduct#                              |     132 |  1.08% |
 | construct and loop 7x7 @anywhichway/cartesian-product          | Timeout |    N/A |
 | construct and loop 7x7 big-cartesian                           | Timeout |    N/A |
-| construct and random access 6x6 @anywhichway/cartesian-product |     154 |  8.04% |
-| construct and random access 6x6 CXProduct#                     |   10690 |  0.88% |
-| construct and random access 6x6 big-cartesian                  |     137 |  4.72% |
+| construct and random access 6x6 @anywhichway/cartesian-product |     102 | 19.86% |
+| construct and random access 6x6 CXProduct#                     |    5559 |  2.35% |
+| construct and random access 6x6 big-cartesian                  |     118 | 14.72% |
 
 
 # Bechmarks Explanation
@@ -91,15 +98,17 @@ A naive implementation of Cartesian is O(n) for access to the first combination.
 
 Although a generator implementation is fast for access to the first combination since it does not compute all possible combinations, it is O(n) for access to the last combination.
 
-Typically there will be higher performance variablity with the generator functions. My hypothesis is this is because they are more likley to use RAM internally and the garbage collector may be invoked between the internal calls to `.next()`.
+The `@anywhichway/cartesian-product` for iterating over all combinations is still O(n). However, the function that computes the combination at an index is faster than a generator function, so it still succeeds on a 7x7 matrix with a 2000ms timeout when a generator fails. For small products it seems to be about 10% faster. For large products it seems to be about 10x faster. I think this is because of garbage collection (see below). Additionally, the implementation is O(1) for any specific combination when it is accessed by index; whereas generator functions are O(n), where `n` is the index. This is useful if statistical sampling of the Cartesian product is required.
 
-The `@anywhichway/cartesian-product` implementation is O(1) for all combinations when they are accessed by index. Iterating over all combinations is still O(n). However, the function that computes the combination at an index is slightly faster than a generator function, so it still succeeds on a 7x7 matrix with a 2000ms timeout when a generator fails. And, at as an artihmetic function it is unlikely to impact the garbage collector.
+Typically there will be higher performance variability with the generator functions. My hypothesis is this is because they are more likely to use RAM internally and the garbage collector may be invoked between the internal calls to `.next()`. Since the `CXProduct` implementation uses a simple arithmetic function it is unlikely to impact the garbage collector.
 
 # Building & Testing
 
 Building, testing and quality assessment are conducted using Mocha, Chai, Istanbul, Benchtest, Code Climate, and Codacity.
 
 # Updates (reverse chronological order)
+
+2023-02-11 v2.0.2 Updated documentation.
 
 2023-02-06 v2.0.1 Updated docs. Added `@anywhichway/cartesian-product` as a dev dependency.
 

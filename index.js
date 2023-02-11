@@ -1,4 +1,30 @@
-//	portions from http://phrogz.net/lazy-cartesian-product
+import {intersector as $l7i9T$intersector} from "intersector";
+
+/*
+MIT License
+
+Copyright (c) 2016-2023 Simon Y. Blackwell
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+	The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+
+	THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+	FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+	OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.
+*/ //	portions from http://phrogz.net/lazy-cartesian-product
+
+const $cf838c15c8b009ba$var$intersection = (0, $l7i9T$intersector)(true);
 function $cf838c15c8b009ba$export$e6364d3a253aa425(collections, options = {}) {
     this.collections = collections ? collections : [];
     Object.defineProperty(this, "length", {
@@ -97,11 +123,11 @@ $cf838c15c8b009ba$export$e6364d3a253aa425.prototype.indexOf = function(row, { ca
 };
 $cf838c15c8b009ba$export$e6364d3a253aa425.prototype.intersection = function(cxproduct1) {
     var me = this, collections = [];
-    if (me.collections.length !== cxproduct1.collections.length) return new $cf838c15c8b009ba$export$e6364d3a253aa425([]);
+    if (me.collections.length !== cxproduct1.collections.length) return new $cf838c15c8b009ba$export$e6364d3a253aa425([], this._options);
     me.collections.forEach(function(collection, i) {
-        collections.push(intersection(collection, cxproduct1.collections[i]));
+        collections.push($cf838c15c8b009ba$var$intersection(collection, cxproduct1.collections[i]));
     });
-    return new $cf838c15c8b009ba$export$e6364d3a253aa425(collections);
+    return new $cf838c15c8b009ba$export$e6364d3a253aa425(collections, this._options);
 };
 $cf838c15c8b009ba$export$e6364d3a253aa425.prototype.verify = function(i, row, { cache: cache  } = {}) {
     var me = this;

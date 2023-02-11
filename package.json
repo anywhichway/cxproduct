@@ -1,15 +1,16 @@
 {
   "name": "cxproduct",
-  "version": "2.0.1",
+  "version": "2.0.2",
   "description": "Cartesian cross-product as a first class object",
-  "source": "src/index.js",
+  "type": "module",
+  "source": "./src/index.js",
   "browser": "./browser/cxproduct.js",
-  "module": "./index.js",
+  "main": "./index.js",
   "scripts": {
     "test": "istanbul cover node_modules/mocha/bin/_mocha --report lcov -- -R spec",
-    "build": "parcel build src/index.js",
+    "build": "parcel build ./src/index.js",
     "prepublish": "npm run build",
-    "watch": "parcel watch src/index.js"
+    "watch": "parcel watch ./src/index.js"
   },
   "repository": {
     "type": "git",
@@ -25,17 +26,17 @@
     "url": "https://github.com/anywhichway/cxproduct/issues"
   },
   "homepage": "https://github.com/anywhichway/cxproductl#readme",
+  "dependencies": {
+    "intersector": "^2.1.1"
+  },
   "devDependencies": {
-    "@anywhichway/cartesian-product": "^1.0.4",
-    "benchtest": "^3.1.4-b",
+    "@anywhichway/cartesian-product": "^1.0.5",
+    "benchtest": "^3.2.0",
     "big-cartesian": "^4.7.0",
     "chai": "^3.5.0",
     "fast-cartesian": "^7.6.0",
     "istanbul": "^0.4.2",
     "mocha": "^10.2.0",
     "parcel": "^2.8.3"
-  },
-  "dependencies": {
-    "intersector": "^2.1.1"
   }
 }
