@@ -1,6 +1,6 @@
 {
   "name": "cxproduct",
-  "version": "2.1.0",
+  "version": "2.1.1",
   "description": "Cartesian cross-product as a first class object",
   "type": "module",
   "source": "./src/index.js",

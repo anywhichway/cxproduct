@@ -100,7 +100,7 @@ A naive implementation of Cartesian is O(n) for access to the first combination.
 
 Although a generator implementation is fast for access to the first combination since it does not compute all possible combinations, it is O(n) for access to the last combination.
 
-The `@anywhichway/cartesian-product` for iterating over all combinations is still O(n). However, the function that computes the combination at an index is faster than a generator function, so it still succeeds on a 7x7 matrix with a 2000ms timeout when a generator fails. For small products it seems to be about 10% faster. For large products it seems to be about 10x faster. I think this is because of garbage collection (see below). Additionally, the implementation is O(1) for any specific combination when it is accessed by index; whereas generator functions are O(n), where `n` is the index. This is useful if statistical sampling of the Cartesian product is required.
+`CXProduct` is O(1) for any specific combination when it is accessed by index; whereas generator functions are O(n), where `n` is the index. This is useful if statistical sampling of the Cartesian product is required. For iterating over all combinations is `CXProduct` is still O(n). However, the function that computes the combination at an index is faster than a generator function, so it still succeeds on a 7x7 matrix with a 2000ms timeout when a generator fails. For small products it seems to be about 10% faster. For large products it seems to be about 10x faster. I think this is because of garbage collection (see below). 
 
 Typically there will be higher performance variability with the generator functions. My hypothesis is this is because they are more likely to use RAM internally and the garbage collector may be invoked between the internal calls to `.next()`. Since the `CXProduct` implementation uses a simple arithmetic function it is unlikely to impact the garbage collector.
 
@@ -109,6 +109,8 @@ Typically there will be higher performance variability with the generator functi
 Building, testing and quality assessment are conducted using Mocha, Chai, Istanbul, Benchtest, Code Climate, and Codacity.
 
 # Updates (reverse chronological order)
+
+2023-02-13 v2.1.1 Documentation updates.
 
 2023-02-11 v2.1.0 Added `asGenerator` and `asArrayLike`.
 
