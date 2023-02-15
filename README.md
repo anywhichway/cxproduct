@@ -1,6 +1,10 @@
 # CXProduct
 
-Very high-speed, low memory Cartesian cross-product as a first class object. Naive cross-products can rapidly consume vast amounts of memory and degrade exponentially in performance. Generator based approaches conserve RAM, but are not performant when non-sequential access is required. CXProduct supports virtual Cartesian cross-product creation and use through the use of lazy evaluation, i.e. rows of the cross-product are not created until needed by calling functions.
+Very high-speed, low memory Cartesian cross-product as a first class object. Naive cross-products can rapidly consume vast amounts of memory and degrade exponentially in performance. Generator based approaches conserve RAM, but are not performant when non-sequential access is required. `CXProduct` supports virtual Cartesian cross-product creation and use through the use of lazy evaluation, i.e. rows of the cross-product are not created until needed by calling functions.
+
+`CXPProduct` is between 10% and 10x faster than other libraries, depending on the size of the arrays you are combining.
+
+[![Maintainability](https://api.codeclimate.com/v1/badges/5f3da4a0c31e6d0497ea/maintainability)](https://codeclimate.com/github/anywhichway/cxproduct/maintainability)
 
 # Install
 
@@ -93,6 +97,11 @@ The generator version, with a slight enhancement to support the `length` propert
 | construct and random access 6x6 CXProduct#                     |    5559 |  2.35% |
 | construct and random access 6x6 big-cartesian                  |     118 | 14.72% |
 
+If you want similar performance for intersection, union, or memoizing also see:
+
+- https://github.com/anywhichway/intersector
+- https://github.com/anywhichway/unionizor
+- https://github.com/anywhichway/nano-memoize
 
 # Bechmarks Explanation
 
@@ -109,6 +118,8 @@ Typically there will be higher performance variability with the generator functi
 Building, testing and quality assessment are conducted using Mocha, Chai, Istanbul, Benchtest, Code Climate, and Codacity.
 
 # Updates (reverse chronological order)
+
+2023-02-15 v2.1.2 Documentation updates.
 
 2023-02-13 v2.1.1 Documentation updates.
 
