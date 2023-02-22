@@ -103,6 +103,10 @@ If you want similar performance for intersection, union, or memoizing also see:
 - https://github.com/anywhichway/unionizor
 - https://github.com/anywhichway/nano-memoize
 
+  For a complete high performance solution to Cartesian product and set operations for Arrays and Sets with a standardized API, plus the addition of the standard map/reduce/find operations to Set see:
+
+- https://github.com/anywhichway/array-set-ops
+
 # Bechmarks Explanation
 
 A naive implementation of Cartesian is O(n) for access to the first combination. It computes the entire set of combinations and then returns the one at the index 0.
@@ -118,6 +122,8 @@ Typically there will be higher performance variability with the generator functi
 Building, testing and quality assessment are conducted using Mocha, Chai, Istanbul, Benchtest, Code Climate, and Codacity.
 
 # Updates (reverse chronological order)
+
+2023-02-23 v2.1.3 Documentation updates.
 
 2023-02-15 v2.1.2 Documentation updates.
 
