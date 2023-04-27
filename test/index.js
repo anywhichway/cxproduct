@@ -128,6 +128,12 @@ describe("Basic",function() {
 		expect(result.every(item => item===0)).to.equal(true);
 		expect(mediumCXProduct._cache[0]).to.not.equal(undefined);
 	});
+	it(`CXProduct asGenerator emtpty`, () => {
+		const mediumCXProduct = CXProduct([]).asGenerator();
+		let i = 0;
+		for(const item of mediumCXProduct) { i++ }
+		expect(i).to.equal(0);
+	});
 	it(`construct and loop ${smallDim}x${smallDim} naive#`,  () => {
 		const smallNaive = naive(small);
 		for(var i=0;i<smallNaive.length;i++) { }

@@ -55,6 +55,7 @@ function $cf838c15c8b009ba$export$e6364d3a253aa425(collections, options = {}) {
 }
 $cf838c15c8b009ba$export$e6364d3a253aa425.prototype.asGenerator = function() {
     const ctx = this, generator = function* generator([head, ...tail]) {
+        if (head === undefined) return;
         const remainder = tail.length > 0 ? generator(tail) : [
             []
         ];

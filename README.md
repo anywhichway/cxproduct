@@ -8,40 +8,50 @@ Very high-speed, low memory Cartesian cross-product as a first class object. Nai
 
 # Install
 
+```bash
 npm install cxproduct
+```
 
-# Documentation
 
-new CXProduct(arrayOfArrays,{cache}={}) - Creates a virtual Cartesian cross-product based on the arrays. A copy of the top level wrapping array is created, 
-which means the contained arrays are not. This way they can be manipulated (added to, deleted from) by code outside the `CXProduct`. If `cache` is true, then
-all `get`, `has`, `indexOf` will all cache results. DO NOT modify the arrays with an external program if caching is on unless you call `flush()` each time you make a modification.
+# Usage
+
+```javascript
+import {CXProduct} from "cxproduct";
+
+const cxproduct = new CXProduct([[1,2],[3,4]]); // [1,3],[1,4],[2,3],[2,4]
+cxproduct.forEach((row,i) => console.log(i,row));
+
+for(const row of new CXProduct([[1,2],[3,4]]).asGenerator()) {
+    console.log(row) 
+}
+```
+
+# API
+
+`new CXProduct(arrayOfArrays,{cache}={})` - Creates a virtual Cartesian cross-product based on the arrays. A copy of the top level wrapping array is created, which means the contained arrays are not. This way they can be manipulated (added to, deleted from) by code outside the `CXProduct`. If `cache` is true, then all `get`, `has`, `indexOf` will all cache results. DO NOT modify the arrays with an external program if caching is on unless you call `flush()` each time you make a modification.
 
 The following methods are supported:
 
-`asGenerator()` - Returns a generator equivalent of the CXProduct so you can use `for(item of cxproduct.asGenerator())`. For convenience, the generator also has a `length` property so you can use `const iterable = cxproduct.asGenerator(); for(let i=0;i<iterable.length;i++)`
+`cxproduct.asGenerator()` - Returns a generator equivalent of the CXProduct so you can use `for(item of cxproduct.asGenerator())`. For convenience, the generator also has a `length` property so you can use `const iterable = cxproduct.asGenerator(); for(let i=0;i<iterable.length;i++)`
 
-`asArrayLike()` - Returns a Proxy that behaves like an array of the CXProduct so you can use `const arrayLike = cxproduct.asGnerator(); for(let i=0;i<arrayLike.length;i++)`
+`cxproduct.asArrayLike()` - Returns a Proxy that behaves like an array of the CXProduct so you can use `const arrayLike = cxproduct.asGnerator(); for(let i=0;i<arrayLike.length;i++)`
 
-`.add(array,...)` - Adds the array to the collection of arrays already associated with the CXProduct. Invalidates the cache, if any.
+`cxproduct.add(array,...)` - Adds the array to the collection of arrays already associated with the CXProduct. Invalidates the cache, if any.
 
-`.push(index,element)` - Adds the element to the array at the index in the collection of arrays associated with the CXProduct. Invalidates the cache, if any.
+`cxproduct.push(index,element)` - Adds the element to the array at the index in the collection of arrays associated with the CXProduct. Invalidates the cache, if any.
 
-`.forEach(callback,{test,cache}={})` - Iterates over the CXProduct and invokes the callback for each row, optionally matching the row against a provided pattern or passing the provided boolean test.
-The callback takes the signature callback(row,index). The optional `test` has the signature `test(array)` and should return true or false. It is not recommended to loop through the `CXProduct` using
-get and a counter. The access algorithms are different and the one under `forEach` is optimized for forward moving access rather than random access.
+`cxproduct.forEach(callback,{test,cache}={})` - Iterates over the CXProduct and invokes the callback for each row, optionally matching the row against a provided pattern or passing the provided boolean test. The callback takes the signature callback(row,index). The optional `test` has the signature `test(array)` and should return true or false. It is not recommended to loop through the `CXProduct` using get and a counter. The access algorithms are different and the one under `forEach` is optimized for forward moving access rather than random access.
 
-`.get(index,{test,cache}={})` - Return row at index. Allocates memory for the row. Repeated calls will not return the same object. Unless `cache===true` or the `CXProduct` was created with the
- `cache=true` option, no cache is created with the CXProduct since underlying collections may be changed by application code in a manner than changes the nature of the `CXProduct`.
+`cxproduct.get(index:number,{test:function,cache:boolean}={})` - Return row as array at index. Allocates memory for the row. Repeated calls will not return the same object. Unless `cache===true` or the `CXProduct` was created with the `cache=true` option.
 
-`.has(row,{cache}={})` - Returns `true` if `row` exists and `false` otherwise.
+`cxproduct.has(row:number,{cache:boolean}={})` - Returns `true` if `row` exists and `false` otherwise.
 
-`.indexable()` - Returns a Proxy that can be index accessed like an array. Note, this will be a lot slower than `.forEach` if you are trying to iterate.
+`cxproduct.indexOf(row:number,{cache}={})` - Return index where the row exists, returns -1 if row does not exist
 
-`.indexOf(row,{cache}={})` - Return index where the row exists, returns -1 if row does not exist
+`cxproduct.intersection(cxproduct:CXProduct)` - Returns a new `CXProduct` that is an intersection of the current `CXProduct` with the one provided as an argument
 
-`.intersection(cxproduct)` - Returns a new `CXProduct` that is an intersection of the current `CXProduct` with the one provided as an argument
+`cxproduct.verify(index:number,row:array,{cache:boolean}={})` - Verifies that the index still contains the row in case the arrays defining the CXProduct have changed.
 
-`.verify(index,row,{cache}={})` - Verifies that the index still contains the row in case the arrays defining the CXProduct have changed.
 
 # Benchmarks
 
@@ -122,6 +132,8 @@ Typically there will be higher performance variability with the generator functi
 Building, testing and quality assessment are conducted using Mocha, Chai, Istanbul, Benchtest, Code Climate, and Codacity.
 
 # Updates (reverse chronological order)
+
+2023-04-27 v2.1.4 Documentation enhancements. Fixed potential bug in `asGenerator()` now returns empty iterable if `CXProduct` was created with a zero length array.
 
 2023-02-23 v2.1.3 Documentation updates.
 

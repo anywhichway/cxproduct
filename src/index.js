@@ -41,6 +41,7 @@ const intersection = intersector(true);
 	CXProduct.prototype.asGenerator = function() {
 		const ctx = this,
 			generator = (function* generator([head, ...tail]) {
+				if(head===undefined) return;
 				const remainder = tail.length > 0 ? generator(tail) : [[]];
 				for (let r of remainder) for (let h of head) yield [h, ...r];
 			})(this.collections);
